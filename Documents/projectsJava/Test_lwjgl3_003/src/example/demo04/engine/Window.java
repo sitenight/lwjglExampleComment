@@ -64,7 +64,7 @@ public class Window {
         glfwDefaultWindowHints(); // по желанию, текущее окно подсказки уже по умолчанию
         glfwWindowHint(GLFW_VISIBLE, GL_FALSE); 
         glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-        
+                
         // Это заставит программу использовать максимально возможную 
         // версию OpenGL между 3.2 и 4.1. Если эти строки не включены, 
         // используется устаревшая версия OpenGL
@@ -72,7 +72,6 @@ public class Window {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        
                 
         // Создание окна
         windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -118,6 +117,11 @@ public class Window {
         GL.createCapabilities();
         
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        
+        // Включаем глубинное тестирование
+        // Пиксели, которые находятся далеко, должны быть нарисованы перед 
+        // пикселями, которые находятся ближе
+        glEnable(GL_DEPTH_TEST); 
     }
     
     public void update() {
