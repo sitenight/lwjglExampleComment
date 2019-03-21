@@ -62,9 +62,9 @@ public class Matrix4f {
 	rx.matrix[2][0] = 0;			rx.matrix[2][1] = (float)Math.sin(x);   rx.matrix[2][2] = (float)Math.cos(x);   rx.matrix[2][3] = 0;
 	rx.matrix[3][0] = 0;			rx.matrix[3][1] = 0;			rx.matrix[3][2] = 0;			rx.matrix[3][3] = 1;
 		
-	ry.matrix[0][0] = (float)Math.cos(y);   ry.matrix[0][1] = 0;			ry.matrix[0][2] = -(float)Math.sin(y);  ry.matrix[0][3] = 0;
+	ry.matrix[0][0] = (float)Math.cos(y);   ry.matrix[0][1] = 0;			ry.matrix[0][2] = (float)Math.sin(y);   ry.matrix[0][3] = 0;
 	ry.matrix[1][0] = 0;			ry.matrix[1][1] = 1;			ry.matrix[1][2] = 0;			ry.matrix[1][3] = 0;
-	ry.matrix[2][0] = (float)Math.sin(y);   ry.matrix[2][1] = 0;			ry.matrix[2][2] = (float)Math.cos(y);   ry.matrix[2][3] = 0;
+	ry.matrix[2][0] = -(float)Math.sin(y);   ry.matrix[2][1] = 0;			ry.matrix[2][2] = (float)Math.cos(y);   ry.matrix[2][3] = 0;
 	ry.matrix[3][0] = 0;			ry.matrix[3][1] = 0;			ry.matrix[3][2] = 0;			ry.matrix[3][3] = 1;
 		
 	matrix = rz.mul(ry.mul(rx)).getMatrix();

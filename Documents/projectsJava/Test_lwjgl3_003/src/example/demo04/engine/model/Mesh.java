@@ -2,6 +2,7 @@ package example.demo04.engine.model;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -97,6 +98,30 @@ public class Mesh {
             if(colourBuffer != null) 
                 MemoryUtil.memFree(colourBuffer);
         }
+    }
+    
+    /**
+     * Рисуем сетку модели
+     */
+    public void render() {
+        // связываем VAO
+       GL30.glBindVertexArray(getVaoId()); 
+       // атрибуты передаем шейдеру и указали в Mesh glVertexAttribPointer
+       GL20.glEnableVertexAttribArray(0);
+       GL20.glEnableVertexAttribArray(1);
+       
+       // ============= Рисуем вершины Mesh
+       // параметры метода:
+       // 1) Режим - Определяет примитивы для рендеринга
+       // 2) Количество - количество отображаемых элементов
+       // 3) Тип - тип данных индексов(Int)
+       // 4) Индекс - задает смещение, применяемое к данным индексов для начала рендеринга
+       glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0); 
+       
+       //восстанавливаем состояние
+       GL20.glDisableVertexAttribArray(0); 
+       GL20.glDisableVertexAttribArray(1); 
+       GL30.glBindVertexArray(0);
     }
     
     public void cleanup() {

@@ -1,5 +1,6 @@
 package example.demo04.engine;
 
+import example.demo04.engine.model.GameItem;
 import example.demo04.engine.model.Mesh;
 import example.demo04.math.Matrix4f;
 import java.nio.FloatBuffer;
@@ -28,8 +29,11 @@ public class Renderer {
     /** Расстояние от точки зрения до дальней отсекающей рамки */
     private static final float Z_FAR = 1000.f;
     
-    /** Матрица проекции/перспектива */
-    private Matrix4f projectionMatrix;
+    private final Transformation transformation;
+
+    public Renderer() {
+        this.transformation = new Transformation();
+    }
     
     public void init(Window window) throws Exception {
         // создаем шейдерную программу
@@ -38,10 +42,11 @@ public class Renderer {
         shaderProgram.createFragmentShader(ShaderProgram.loadResource("/demo04/fragment.fs"));
         shaderProgram.link();
         
-        // создаем матрицу проекции
-        projectionMatrix = new Matrix4f().projection(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
-        //projectionMatrix = new org.joml.Matrix4f().perspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
+        // создаем униформу для мировой и проекционной матрицы
         shaderProgram.createUniform("projectionMatrix");
+        shaderProgram.createUniform("worldMatrix");
+        
+        window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
     
     /**
@@ -52,7 +57,7 @@ public class Renderer {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
     
-   public void render(Window window, Mesh mesh) {
+   public void render(Window window, GameItem[] gameItems) {
        clear();
        
        if(window.isResized()) {
@@ -61,26 +66,23 @@ public class Renderer {
        }
        
        shaderProgram.bind(); // привязываем программу шейдеров
+              
+       //Обновляем матрицу проекции
+       Matrix4f projectionMatrix  = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
        shaderProgram.setUniform("projectionMatrix", projectionMatrix);
        
-       // связываем VAO
-       GL30.glBindVertexArray(mesh.getVaoId()); 
-       // атрибуты передаем шейдеру и указали в Mesh glVertexAttribPointer
-       GL20.glEnableVertexAttribArray(0);
-       GL20.glEnableVertexAttribArray(1);
-       
-       // ============= Рисуем вершины Mesh
-       // параметры метода:
-       // 1) Режим - Определяет примитивы для рендеринга
-       // 2) Количество - количество отображаемых элементов
-       // 3) Тип - тип данных индексов(Int)
-       // 4) Индекс - задает смещение, применяемое к данным индексов для начала рендеринга
-       glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0); 
-       
-       //восстанавливаем состояние
-       GL20.glDisableVertexAttribArray(0); 
-       GL20.glDisableVertexAttribArray(1); 
-       GL30.glBindVertexArray(0);
+       // Рендеринг каждого игрового элемента
+       for (GameItem gameItem : gameItems) {
+           // Устанавливаем мировую матрицу для этого элемента
+           Matrix4f worldMatrix = transformation.getWorldMatrix(
+                   gameItem.getPosition(), 
+                   gameItem.getRotation(), 
+                   gameItem.getScale()
+           );
+           shaderProgram.setUniform("worldMatrix", worldMatrix); //помещаем матрицу в шейдер
+           //Рендеринг Сетки для этого игрового предмета
+           gameItem.getMesh().render();
+       }
        
        shaderProgram.unbind(); // отвязываем программу
    }

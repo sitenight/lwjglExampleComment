@@ -54,6 +54,11 @@ public class GameItem {
         this.rotation.y = y;
         this.rotation.z = z;
     }
+
+    public Mesh getMesh() {
+        return mesh;
+    }
+    
     
     
 }
