@@ -9,6 +9,12 @@ public class Matrix4f {
     public Matrix4f() {
         matrix = new float[4][4];
     }
+
+    public Matrix4f(Matrix4f matrix) {
+        for(int x = 0; x < 4; x++) 
+            for(int y = 0; y < 4; y++) 
+                this.matrix[x][y] = matrix.get(x, y);
+    }
     
     /**
      * Генерирование единичной матрицы
