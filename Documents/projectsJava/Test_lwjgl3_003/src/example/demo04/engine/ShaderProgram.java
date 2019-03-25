@@ -52,11 +52,16 @@ public class ShaderProgram {
         //glUniformMatrix4fv(uniforms.get(uniformName), false, Utils.createFlippedBuffer(matrix));
     }
     
-    public void setUniformi(String uniformName, int value) {
+    /**
+     * Устанавливаем целочисленное значение для униформы
+     * @param uniformName название униформы
+     * @param value целочисленое значение
+     */
+    public void setUniform(String uniformName, int value) {
 	glUniform1i(uniforms.get(uniformName), value);
     }
 	
-    public void setUniformf(String uniformName, float value) {
+    public void setUniform(String uniformName, float value) {
 	glUniform1f(uniforms.get(uniformName), value);
     }
 	

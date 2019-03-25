@@ -35,5 +35,20 @@ public class Image {
         return new Image(image, width, height);
     }
     
+    // =============== getter & setter =======
+
+    public ByteBuffer getImage() {
+        return image;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+    
+    
 }
 

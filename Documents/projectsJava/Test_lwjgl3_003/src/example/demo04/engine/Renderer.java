@@ -45,8 +45,7 @@ public class Renderer {
         // создаем униформу для мировой и проекционной матрицы
         shaderProgram.createUniform("projectionMatrix");
         shaderProgram.createUniform("worldMatrix");
-        
-        window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        shaderProgram.createUniform("texture_sampler");
     }
     
     /**
@@ -71,6 +70,7 @@ public class Renderer {
        Matrix4f projectionMatrix  = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
        shaderProgram.setUniform("projectionMatrix", projectionMatrix);
        
+       shaderProgram.setUniform("texture_sampler", 0);
        // Рендеринг каждого игрового элемента
        for (GameItem gameItem : gameItems) {
            // Устанавливаем мировую матрицу для этого элемента
