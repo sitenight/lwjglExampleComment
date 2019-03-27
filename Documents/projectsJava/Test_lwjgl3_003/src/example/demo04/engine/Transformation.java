@@ -9,7 +9,7 @@ public class Transformation {
     private final Matrix4f projectionMatrix;
     
     /** Матрица вида */
-    private final Matrix4f viewMatrix;
+    private Matrix4f viewMatrix;
     
     private Matrix4f modelViewMatrix;
 
@@ -20,7 +20,6 @@ public class Transformation {
     }
     
     public Matrix4f getProjectionMatrix(float fov, int width, int height, float zNear, float zFar) {
-        projectionMatrix.identity();
         projectionMatrix.projection(fov, width, height, zNear, zFar);
         return projectionMatrix;
     }
@@ -29,11 +28,15 @@ public class Transformation {
         Vector3f cameraPos = camera.getPosition();
         Vector3f rotation = camera.getRotation();
         
-        viewMatrix.identity();
         // Сначала делаем поворот, чтобы камера вращалась над своей позицией
-        viewMatrix.rotated(rotation);
+        //viewMatrix.rotated(rotation);
+	Matrix4f rotationMatrix = new Matrix4f(viewMatrix.rotated(new Vector3f(rotation.x, rotation.y, 0)));
+        
         // Потом перемещение, позиции с отрицательными значениями
-        viewMatrix.translated(cameraPos.mul(-1.0f));
+        //viewMatrix.translated(cameraPos.mul(-1.0f));        
+        Matrix4f translationMatrix = new Matrix4f(viewMatrix.translated(cameraPos.mul(-1.0f)));
+                
+        viewMatrix = rotationMatrix.mul(translationMatrix);
         return viewMatrix;
     }
     

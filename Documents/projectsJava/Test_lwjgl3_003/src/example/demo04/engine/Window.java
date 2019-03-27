@@ -177,6 +177,10 @@ public class Window {
     public int getHeight() {
         return height;
     }
+
+    public long getWindowHandle() {
+        return windowHandle;
+    }
     
     
 }

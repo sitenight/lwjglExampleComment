@@ -17,6 +17,12 @@ public class Camera {
         this.rotation = rotation;
     }
     
+    /**
+     * Смещение камеры на заданное растояние
+     * @param offsetX смещение по оси X
+     * @param offsetY смещение по оси Y
+     * @param offsetZ смещение по оси Z
+     */
     public void movePosition(float offsetX, float offsetY, float offsetZ) {
         if(offsetZ != 0) {
             position.x += (float) Math.sin(Math.toRadians(rotation.y)) * -1.0f * offsetZ;
@@ -29,6 +35,12 @@ public class Camera {
         position.y += offsetY;
     }
     
+    /**
+     * Поворот камеры на заданный угол
+     * @param offsetX
+     * @param offsetY
+     * @param offsetZ 
+     */
     public void moveRotation(float offsetX, float offsetY, float offsetZ) {
         rotation.x += offsetX;
         rotation.y += offsetY;

@@ -1,6 +1,8 @@
 package example.demo04;
 
+import example.demo04.engine.Camera;
 import example.demo04.engine.IGameLogic;
+import example.demo04.engine.MouseInput;
 import example.demo04.engine.model.Mesh;
 import example.demo04.engine.Renderer;
 import example.demo04.engine.Window;
@@ -12,19 +14,22 @@ import static org.lwjgl.opengl.GL11.glViewport;
 
 public class DummyGame implements IGameLogic{
     
-    private int displxInc = 0;
-
-    private int displyInc = 0;
-
-    private int displzInc = 0;
-
-    private int scaleInc = 0;
+    private static final float MOUSE_SENSITIVITY = 0.2f;
+    private static final float CAMERA_POS_STEP = 0.05f;
+    
+    /** смещение камеры */
+    private Vector3f cameraInc;
+    
+    private Camera camera;
     
     private final Renderer renderer;
     private GameItem[] gameItems;
 
     public DummyGame() {
         renderer = new Renderer();
+        
+        camera = new Camera();
+        cameraInc = new Vector3f();
     }
 
     @Override
@@ -128,14 +133,45 @@ public class DummyGame implements IGameLogic{
         };
         Texture texture = new Texture("./res/demo04/textures/grassblock.png");
         Mesh mesh = new Mesh(vertices, textCoords, indices, texture);
-        GameItem gameItem = new GameItem(mesh);
-        gameItem.setPosition(0, 0, -2);
-        gameItems = new GameItem[] { gameItem };
+        // добавляем больше кубов в наш мир
+        GameItem gameItem1 = new GameItem(mesh);
+        gameItem1.setScale(0.5f);
+        gameItem1.setPosition(0, 0, -2);
+        
+        GameItem gameItem2 = new GameItem(mesh);
+        gameItem2.setScale(0.5f);
+        gameItem2.setPosition(0.5f, 0.5f, -2);
+        
+        GameItem gameItem3 = new GameItem(mesh);
+        gameItem3.setScale(0.5f);
+        gameItem3.setPosition(0, 0, -2.5f);
+        
+        GameItem gameItem4 = new GameItem(mesh);
+        gameItem4.setScale(0.5f);
+        gameItem4.setPosition(0.5f, 0, -2.5f);
+        
+        gameItems = new GameItem[] { gameItem1, gameItem2, gameItem3, gameItem4 };
     }
 
     @Override
-    public void input(Window window) {
-        displyInc = 0;
+    public void input(Window window, MouseInput mouseInput) {
+        cameraInc.set(0, 0, 0);
+        if (window.isKeyPressed(GLFW_KEY_W)) {
+            cameraInc.z = -1;
+        } else if (window.isKeyPressed(GLFW_KEY_S)) {
+            cameraInc.z = 1;
+        } 
+        if (window.isKeyPressed(GLFW_KEY_A)) {
+            cameraInc.x = -1;
+        } else if (window.isKeyPressed(GLFW_KEY_D)) {
+            cameraInc.x = 1;
+        } 
+        if (window.isKeyPressed(GLFW_KEY_SPACE)) {
+            cameraInc.y = -1;
+        } else if (window.isKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
+            cameraInc.y = 1;
+        } 
+        /*displyInc = 0;
         displxInc = 0;
         displzInc = 0;
         scaleInc = 0;
@@ -156,37 +192,32 @@ public class DummyGame implements IGameLogic{
             scaleInc = -1;
         } else if (window.isKeyPressed(GLFW_KEY_X)) {
             scaleInc = 1;
-        }
+        }*/
     }
 
     @Override
-    public void update(float interval) {
+    public void update(float interval, MouseInput mouseInput) {
         for (GameItem gameItem : gameItems) {
-            // обновляем позицию
-            Vector3f itemPos = gameItem.getPosition();
-            float posx = itemPos.x + displxInc * 0.01f;
-            float posy = itemPos.y + displyInc * 0.01f;
-            float posz = itemPos.z + displzInc * 0.01f;
-            gameItem.setPosition(posx, posy, posz);
+            // обновляем позицию камеры
+           camera.movePosition(
+                   cameraInc.x * CAMERA_POS_STEP, 
+                   cameraInc.y * CAMERA_POS_STEP, 
+                   cameraInc.z * CAMERA_POS_STEP);
             
-            // обновляем масштаб
-            float scale = gameItem.getScale();
-            scale += scaleInc * 0.05f;
-            if(scale < 0) 
-                scale = 0;
-            gameItem.setScale(scale);
-            
-            // обновляем углы поворота
-            float rotation = gameItem.getRotation().z + 1.5f;
-            if(rotation > 360) 
-                rotation = 0;
-            gameItem.setRotation(0, 0, rotation);
+            // Update camera based on mouse 
+            if(mouseInput.isRightButtonPressed()) {
+                Vector2f rotVec = mouseInput.getDisplVec();
+                camera.moveRotation(
+                    rotVec.x * MOUSE_SENSITIVITY,
+                    rotVec.y * MOUSE_SENSITIVITY,
+                    0);
+            }
         }
     }
 
     @Override
     public void render(Window window) {
-        renderer.render(window, gameItems);
+        renderer.render(window, camera, gameItems);
     }
 
     @Override

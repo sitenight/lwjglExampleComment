@@ -16,14 +16,16 @@ public interface IGameLogic {
     /**
      * Ввод данных
      * @param window 
+     * @param mouseInput 
      */
-    void input(Window window);
+    void input(Window window, MouseInput mouseInput);
     
     /**
      * Обновление состояния игры
      * @param interval 
+     * @param mouseInput 
      */
-    void update(float interval);
+    void update(float interval, MouseInput mouseInput);
     
     /**
      * Отображения данных, относящихся к игре

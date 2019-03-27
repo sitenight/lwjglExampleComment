@@ -11,6 +11,7 @@ public class Matrix4f {
     }
 
     public Matrix4f(Matrix4f matrix) {
+        this.matrix = new float[4][4];
         for(int x = 0; x < 4; x++) 
             for(int y = 0; y < 4; y++) 
                 this.matrix[x][y] = matrix.get(x, y);

@@ -42,11 +42,15 @@ public class Vector2d {
      * @return координаты суммы векторов
      */
     public Vector2d add(Vector2d vector) {
-        return new Vector2d(x + vector.x, y + vector.y);
+        x += vector.x;
+        y += vector.y;
+        return this;
     }
     
     public Vector2d add(float r) {
-        return new Vector2d(x + r, y + r);
+        x += r;
+        y += r;
+        return this;
     }
     
     /**
@@ -104,6 +108,11 @@ public class Vector2d {
     @Override
     public String toString() {
         return x + "," + y;
+    }
+    
+    public void set(double x, double y) {
+        this.x = x;
+        this.y = y;
     }
 
 }
