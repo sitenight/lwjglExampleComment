@@ -5,6 +5,7 @@ package example.demo04.engine.gui;
  * @author user
  */
 public enum EnumPosition {
+    NONE,
     LEFTTOP,
     TOP,
     RIGHTTOP,
