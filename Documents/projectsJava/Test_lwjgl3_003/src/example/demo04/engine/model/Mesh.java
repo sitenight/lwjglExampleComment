@@ -1,5 +1,6 @@
 package example.demo04.engine.model;
 
+import example.demo04.math.Vector3f;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import org.lwjgl.system.MemoryUtil;
  */
 public class Mesh {
     
+    private static final Vector3f DEFAULT_COLOUR = new Vector3f(1.0f, 1.0f, 1.0f);
+    
     /** Объект вершинного массива - содержит списки атрибутов: положениеб цветб текстура и т.д.*/
     private final int vaoId;
     
@@ -30,22 +33,25 @@ public class Mesh {
     /** Количество вершин */
     private final int vertexCount;
     
-    private final Texture texture;
+    private Texture texture;
+    
+    private Vector3f colour;
 
     /**
-     * 
+     * Конструктор объекта
      * @param positions массив координат вершин
      * @param colours содержит цвет для каждой координаты
      * @param indices массив индексов вершин
      */
-    public Mesh(float[] positions, float[] textCoords, int[] indices, Texture texture) {
+    public Mesh(float[] positions, float[] textCoords, float[] normal, int[] indices) {
         FloatBuffer posBuffer = null;
         FloatBuffer textCoordsBuffer = null;
+        FloatBuffer vecNormalsBuffer = null;
         IntBuffer indicesBuffer = null;
         try {
+            colour = DEFAULT_COLOUR;
             vertexCount = indices.length;
             vboIdList = new ArrayList<>();
-            this.texture = texture;
 
             vaoId = GL30.glGenVertexArrays(); // выделяем идентификатор в OpenGL
             GL30.glBindVertexArray(vaoId); // Активируем буффера вершин
@@ -80,6 +86,16 @@ public class Mesh {
             // индекс = 1 (для передачи Шейдеру)
             GL20.glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
             
+            // VBO Буфер нормалей
+            vboId = GL15.glGenBuffers(); 
+            vboIdList.add(vboId);
+            vecNormalsBuffer = MemoryUtil.memAllocFloat(normal.length);             
+            vecNormalsBuffer.put(normal).flip();
+            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);  
+            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vecNormalsBuffer, GL15.GL_STATIC_DRAW); 
+            // индекс = 1 (для передачи Шейдеру)
+            GL20.glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
+            
             // VBO Буфер индексов позиций
             vboId = GL15.glGenBuffers(); 
             vboIdList.add(vboId);
@@ -98,6 +114,8 @@ public class Mesh {
                 MemoryUtil.memFree(posBuffer);
             if(textCoordsBuffer != null) 
                 MemoryUtil.memFree(textCoordsBuffer);
+            if(vecNormalsBuffer != null) 
+                MemoryUtil.memFree(vecNormalsBuffer);
             if(indicesBuffer != null) 
                 MemoryUtil.memFree(indicesBuffer);
         }
@@ -107,16 +125,19 @@ public class Mesh {
      * Рисуем сетку модели
      */
     public void render() {
-        // Активируем первый банк текстур
-        GL13.glActiveTexture(GL13.GL_TEXTURE0);
-        // присоединяем текстуру
-        glBindTexture(GL_TEXTURE_2D, texture.getId());
+        if(isTexture()) {
+            // Активируем первый банк текстур
+            GL13.glActiveTexture(GL13.GL_TEXTURE0);
+            // присоединяем текстуру
+            glBindTexture(GL_TEXTURE_2D, texture.getId());
+        }
        
         // связываем VAO
        GL30.glBindVertexArray(getVaoId()); 
        // атрибуты передаем шейдеру и указали в Mesh glVertexAttribPointer
        GL20.glEnableVertexAttribArray(0);
        GL20.glEnableVertexAttribArray(1);
+       GL20.glEnableVertexAttribArray(2);
        
        // ============= Рисуем вершины Mesh
        // параметры метода:
@@ -129,7 +150,9 @@ public class Mesh {
        //восстанавливаем состояние
        GL20.glDisableVertexAttribArray(0); 
        GL20.glDisableVertexAttribArray(1); 
+       GL20.glDisableVertexAttribArray(2); 
        GL30.glBindVertexArray(0);
+       glBindTexture(GL_TEXTURE_2D, 0);
     }
     
     public void cleanup() {
@@ -142,7 +165,8 @@ public class Mesh {
         }
         
         // Delete the textures
-        texture.cleanup();
+        if(isTexture()) 
+            texture.cleanup();
         
         // Delete the VAO
         GL30.glBindVertexArray(0);
@@ -158,6 +182,27 @@ public class Mesh {
     public int getVertexCount() {
         return vertexCount;
     }
+
+    public boolean isTexture() {
+        return this.texture != null;
+    }
+
+    public Texture getTexture() {
+        return texture;
+    }
+
+    public void setTexture(Texture texture) {
+        this.texture = texture;
+    }
+
+    public Vector3f getColour() {
+        return colour;
+    }
+
+    public void setColour(Vector3f colour) {
+        this.colour = colour;
+    }
+    
     
 }
 

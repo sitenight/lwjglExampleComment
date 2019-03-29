@@ -2,10 +2,13 @@ package example.demo04.engine;
 
 import example.demo04.engine.model.Vertex;
 import example.demo04.math.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.List;
 import org.lwjgl.BufferUtils;
 
 public class Utils {
@@ -81,6 +84,16 @@ public class Utils {
             result[i] = data[i].intValue();
 		
         return result;
+    }
+    
+    public static List<String> readAllLines(String path) throws Exception {
+        List<String> list = new ArrayList<>();
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(Class.forName(Utils.class.getName()).getResourceAsStream(path)))) {
+            String line;
+            while((line = br.readLine()) != null) 
+                list.add(line);
+        }
+        return list;
     }
 }
 

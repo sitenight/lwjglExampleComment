@@ -1,5 +1,6 @@
 package example.demo04.math;
 
+import example.demo04.engine.Window;
 import java.nio.FloatBuffer;
 
 public class Matrix4f {
@@ -46,18 +47,33 @@ public class Matrix4f {
     
     /**
      * Генерирование матрицы поворота 
+     * @param angleX угол поворота по оси Х
+     * @param angleY угол поворота по оси Y
+     * @param angleZ угол поворота по оси Z
+     * @return матрицу поворота
+     */
+    public Matrix4f rotated(float angleX, float angleY, float angleZ) {
+        return rotated(new Vector3f(angleX, angleY, angleZ));
+    }
+    
+    /**
+     * Генерирование матрицы поворота 
      * @param vector
      * @return 
      */
-    public Matrix4f rotated(Vector3f vector) {
-        Matrix4f rx = new Matrix4f();
+    public Matrix4f rotated(Vector3f vector) {	        
+        Matrix4f rx = new Matrix4f().rotated(vector.x, new Vector3f(1, 0, 0));
+	Matrix4f ry = new Matrix4f().rotated(vector.y, new Vector3f(0, 1, 0));
+	Matrix4f rz = new Matrix4f().rotated(vector.z, new Vector3f(0, 0, 1));
+		
+       /*  Matrix4f rx = new Matrix4f();
 	Matrix4f ry = new Matrix4f();
 	Matrix4f rz = new Matrix4f();
 		
 	float x = (float)Math.toRadians(vector.x);
 	float y = (float)Math.toRadians(vector.y);
 	float z = (float)Math.toRadians(vector.z);
-		
+        
 	rz.matrix[0][0] = (float)Math.cos(z);   rz.matrix[0][1] = -(float)Math.sin(z);  rz.matrix[0][2] = 0;			rz.matrix[0][3] = 0;
 	rz.matrix[1][0] = (float)Math.sin(z);   rz.matrix[1][1] = (float)Math.cos(z);   rz.matrix[1][2] = 0;			rz.matrix[1][3] = 0;
 	rz.matrix[2][0] = 0;			rz.matrix[2][1] = 0;			rz.matrix[2][2] = 1;			rz.matrix[2][3] = 0;
@@ -73,8 +89,45 @@ public class Matrix4f {
 	ry.matrix[2][0] = -(float)Math.sin(y);  ry.matrix[2][1] = 0;			ry.matrix[2][2] = (float)Math.cos(y);   ry.matrix[2][3] = 0;
 	ry.matrix[3][0] = 0;			ry.matrix[3][1] = 0;			ry.matrix[3][2] = 0;			ry.matrix[3][3] = 1;
 		
-	matrix = rz.mul(ry.mul(rx)).getMatrix();
+        Matrix4f rzz = new Matrix4f().rotated(vector.z, new Vector3f(0, 0, 1));
+	Matrix4f ryy = new Matrix4f().rotated(vector.y, new Vector3f(0, 1, 0));
+	Matrix4f rxx = new Matrix4f().rotated(vector.x, new Vector3f(1, 0, 0));
+        System.out.println("// rz");
+        System.out.println(rz.toString());
+        System.out.println("// rzz");
+        System.out.println(rz.toString());
+        */
+	//matrix = rz.mul(ry.mul(rx)).getMatrix();
                 
+        return rz.mul(ry.mul(rx.mul(this)));
+    }
+    
+    /**
+     * Поворот матрицы по одной из оси
+     * @param angle угол поворота
+     * @param axis ось поворота. Например (1, 0, 0) по оси x
+     * т.к. ось должна быть равна 1
+     * @return матрицу поворота
+     */
+    public Matrix4f rotated(float angle, Vector3f axis) {
+	float a = (float)Math.toRadians(angle);
+	
+        if(axis.x > 0) {
+            matrix[0][0] = 1;			matrix[0][1] = 0;                   matrix[0][2] = 0;                   matrix[0][3] = 0;
+            matrix[1][0] = 0;			matrix[1][1] = (float)Math.cos(a);  matrix[1][2] = -(float)Math.sin(a); matrix[1][3] = 0;
+            matrix[2][0] = 0;			matrix[2][1] = (float)Math.sin(a);  matrix[2][2] = (float)Math.cos(a);  matrix[2][3] = 0;
+            matrix[3][0] = 0;			matrix[3][1] = 0;                   matrix[3][2] = 0;                   matrix[3][3] = 1;
+	} else if(axis.y > 0) {	
+            matrix[0][0] = (float)Math.cos(a);  matrix[0][1] = 0;                   matrix[0][2] = (float)Math.sin(a);  matrix[0][3] = 0;
+            matrix[1][0] = 0;                   matrix[1][1] = 1;                   matrix[1][2] = 0;                   matrix[1][3] = 0;
+            matrix[2][0] = -(float)Math.sin(a); matrix[2][1] = 0;                   matrix[2][2] = (float)Math.cos(a);  matrix[2][3] = 0;
+            matrix[3][0] = 0;                   matrix[3][1] = 0;                   matrix[3][2] = 0;                   matrix[3][3] = 1;
+        } else if(axis.z > 0) {
+            matrix[0][0] = (float)Math.cos(a);  matrix[0][1] = -(float)Math.sin(a); matrix[0][2] = 0;                   matrix[0][3] = 0;
+            matrix[1][0] = (float)Math.sin(a);  matrix[1][1] = (float)Math.cos(a);  matrix[1][2] = 0;                   matrix[1][3] = 0;
+            matrix[2][0] = 0;			matrix[2][1] = 0;                   matrix[2][2] = 1;                   matrix[2][3] = 0;
+            matrix[3][0] = 0;			matrix[3][1] = 0;                   matrix[3][2] = 0;                   matrix[3][3] = 1;
+        } 
         return this;
     }
     
@@ -128,17 +181,52 @@ public class Matrix4f {
         float b = (2 * zFar * zNear) / zRange;
         
         
-        matrix[0][0] = f / aspect; matrix[0][1] = 0;          matrix[0][2] = 0;   matrix[0][3] = 0;
-        matrix[1][0] = 0;                   matrix[1][1] = f;   matrix[1][2] = 0;   matrix[1][3] = 0;
-        matrix[2][0] = 0;                   matrix[2][1] = 0;          matrix[2][2] = a;   matrix[2][3] = b;
-        matrix[3][0] = 0;                   matrix[3][1] = 0;          matrix[3][2] = -1;   matrix[3][3] = 0;
+        matrix[0][0] = f / aspect; matrix[0][1] = 0;   matrix[0][2] = 0;   matrix[0][3] = 0;
+        matrix[1][0] = 0;          matrix[1][1] = f;   matrix[1][2] = 0;   matrix[1][3] = 0;
+        matrix[2][0] = 0;          matrix[2][1] = 0;   matrix[2][2] = a;   matrix[2][3] = b;
+        matrix[3][0] = 0;          matrix[3][1] = 0;   matrix[3][2] = -1;  matrix[3][3] = 0;
         
         return this;
     }
     
-    public Matrix4f initCamera(Vector3f forward, Vector3f up) {
-	Vector3f f = forward.normalized();
+    /**
+     * Ортографическая матрица проекции
+     * @param l лево
+     * @param r право
+     * @param b низ
+     * @param t верх
+     * @param n
+     * @param f
+     * @return матрицу проекции
+     */
+    public Matrix4f OrthographicProjection(float l, float r, float b, float t, float n, float f) {
+	matrix[0][0] = 2.0f/(r-l);  matrix[0][1] = 0; 		matrix[0][2] = 0;           matrix[0][3] = -(r+l)/(r-l);
+	matrix[1][0] = 0;           matrix[1][1] = 2.0f/(t-b); 	matrix[1][2] = 0;           matrix[1][3] = -(t+b)/(t-b);
+	matrix[2][0] = 0;           matrix[2][1] = 0; 		matrix[2][2] = 2.0f/(f-n);  matrix[2][3] = -(f+n)/(f-n);
+	matrix[3][0] = 0;           matrix[3][1] = 0; 		matrix[3][2] = 0;           matrix[3][3] = 1;
+	
+	return this;
+    }
+    
+	
+    public Matrix4f Orthographic2D(double width, double height) {
+	//Z-значение 1: глубина орфографической между 0 и -1
+	matrix[0][0] = 2f/(float)width; matrix[0][1] = 0;                matrix[0][2] = 0; matrix[0][3] = -1;
+	matrix[1][0] = 0;               matrix[1][1] = 2f/(float)height; matrix[1][2] = 0; matrix[1][3] = -1;
+	matrix[2][0] = 0;               matrix[2][1] = 0;                matrix[2][2] = 1; matrix[2][3] =  0;
+	matrix[3][0] = 0;               matrix[3][1] = 0;                matrix[3][2] = 0; matrix[3][3] =  1;
 		
+	return this;
+    }
+    
+    /**
+     * Матрица вида
+     * @param forward
+     * @param up
+     * @return 
+     */
+    public Matrix4f View(Vector3f forward, Vector3f up) {
+	Vector3f f = forward.normalized();
 	Vector3f r = up.normalized();
 	r = r.cross(f);
 		

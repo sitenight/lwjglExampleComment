@@ -9,6 +9,8 @@ import org.lwjgl.glfw.GLFW;
 
 /**
  * По учебнику РУС https://github.com/Igorek536/lwjgl-rusbook
+ * Англ вариант: https://lwjglgamedev.gitbooks.io/3d-game-development-with-lwjgl/content/chapter09/chapter9.html
+ * исходник: https://github.com/lwjglgamedev/lwjglbook/blob/master/chapter09/src/main/java/org/lwjglb/engine/graph/OBJLoader.java
  * @author user
  */
 public class Main {

@@ -46,6 +46,9 @@ public class Renderer {
         shaderProgram.createUniform("projectionMatrix");
         shaderProgram.createUniform("modelViewMatrix");
         shaderProgram.createUniform("texture_sampler");
+        // создаем униформу для цвета по умолчанию и флага использования  цвета
+        shaderProgram.createUniform("colour");
+        shaderProgram.createUniform("useColour");
     }
     
     /**
@@ -76,13 +79,18 @@ public class Renderer {
        shaderProgram.setUniform("texture_sampler", 0);
        // Рендеринг каждого игрового элемента
        for (GameItem gameItem : gameItems) {
+           Mesh mesh = gameItem.getMesh();
            // Устанавливаем матрицу вида для этого элемента
            Matrix4f modelViewMatrix = transformation.getModelViewMatrix (
                    gameItem, viewMatrix
            );
+           // задаем значения юниформы
            shaderProgram.setUniform("modelViewMatrix", modelViewMatrix); //помещаем матрицу в шейдер
+           shaderProgram.setUniform("colour", mesh.getColour());
+           shaderProgram.setUniform("useColour", mesh.isTexture() ? 0 : 1);
+           
            //Рендеринг Сетки для этого игрового предмета
-           gameItem.getMesh().render();
+           mesh.render();
        }
        
        shaderProgram.unbind(); // отвязываем программу

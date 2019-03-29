@@ -31,9 +31,10 @@ public class HudButton extends HudObject {
         this.padding = padding;
         this.state = state;
         label = new HudTextLabel(position.x, position.y, text);
-        size = new Vector2d(
+    /*    size = new Vector2d(
                 label.getWidth() + (padding.x * 2), 
-                label.getHeight() + (padding.y * 2));        
+                label.getHeight() + (padding.y * 2));     
+*/
     }
 
     @Override

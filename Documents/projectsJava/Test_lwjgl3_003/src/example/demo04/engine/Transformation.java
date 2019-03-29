@@ -28,12 +28,10 @@ public class Transformation {
         Vector3f cameraPos = camera.getPosition();
         Vector3f rotation = camera.getRotation();
         
-        // Сначала делаем поворот, чтобы камера вращалась над своей позицией
-        //viewMatrix.rotated(rotation);
-	Matrix4f rotationMatrix = new Matrix4f(viewMatrix.rotated(new Vector3f(rotation.x, rotation.y, 0)));
+        // Сначала делаем поворот, чтобы камера вращалась над своей позицией        
+        Matrix4f rotationMatrix = new Matrix4f(viewMatrix.rotated(rotation.x, rotation.y, 0));
         
-        // Потом перемещение, позиции с отрицательными значениями
-        //viewMatrix.translated(cameraPos.mul(-1.0f));        
+        // Потом перемещение, позиции с отрицательными значениями     
         Matrix4f translationMatrix = new Matrix4f(viewMatrix.translated(cameraPos.mul(-1.0f)));
                 
         viewMatrix = rotationMatrix.mul(translationMatrix);
