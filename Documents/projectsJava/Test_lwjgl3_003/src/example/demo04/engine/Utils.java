@@ -88,10 +88,14 @@ public class Utils {
     
     public static List<String> readAllLines(String path) throws Exception {
         List<String> list = new ArrayList<>();
+        System.out.println(path);
         try(BufferedReader br = new BufferedReader(new InputStreamReader(Class.forName(Utils.class.getName()).getResourceAsStream(path)))) {
             String line;
-            while((line = br.readLine()) != null) 
+            while((line = br.readLine()) != null)  {
                 list.add(line);
+            
+            System.out.println(line);
+            }
         }
         return list;
     }

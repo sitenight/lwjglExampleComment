@@ -2,6 +2,7 @@
 
 layout (location=0) in vec3 position; //индекс в атрибутах Mesh, позиция
 layout (location=1) in vec2 texCoord; //индекс в атрибутах Mesh, координаты текстуры
+layout (location=2) in vec3 vertexNormal;
 
 out vec2 outTexCoord;
 
