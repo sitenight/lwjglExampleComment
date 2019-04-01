@@ -145,7 +145,7 @@ public class Mesh {
      * @param defaultValue значение по умолчанию
      * @return новый пустой массив
      */
-    private static int[] createEmptyIntArray(int length, int defaultValue) {
+    protected static int[] createEmptyIntArray(int length, int defaultValue) {
         int[] result = new int[length];
         Arrays.fill(result, defaultValue);
         return result;
@@ -157,7 +157,7 @@ public class Mesh {
      * @param defaultValue значение по умолчанию
      * @return новый пустой массив
      */
-    private static float[] createEmptyFloatArray(int length, float defaultValue) {
+    protected static float[] createEmptyFloatArray(int length, float defaultValue) {
         float[] result = new float[length];
         Arrays.fill(result, defaultValue);
         return result;

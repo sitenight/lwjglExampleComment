@@ -191,12 +191,12 @@ public class Matrix4f {
     
     /**
      * Ортографическая матрица проекции
-     * @param l лево
-     * @param r право
-     * @param b низ
-     * @param t верх
-     * @param n
-     * @param f
+     * @param l левая координата
+     * @param r правая координата
+     * @param b нижняя координата
+     * @param t верхняя координата
+     * @param n Ближняя координата (zNear)
+     * @param f Дальняя координата (zFar)
      * @return матрицу проекции
      */
     public Matrix4f OrthographicProjection(float l, float r, float b, float t, float n, float f) {
@@ -219,6 +219,11 @@ public class Matrix4f {
 	return this;
     }
     
+    
+    public Matrix4f setOrtho2D(float left, float right, float bottom, float top) {
+        return Orthographic2D((double)(right - left),(double)(bottom - top));
+    }
+    
     /**
      * Матрица вида
      * @param forward
@@ -238,6 +243,33 @@ public class Matrix4f {
 	matrix[3][0] = 0;	matrix[3][1] = 0;	matrix[3][2] = 0;	matrix[3][3] = 1;
 		
 	return this;
+    }
+    
+    /**
+     * Создает новую матрицу модели перемещения, поворота и масштаба
+     * @param posX позиция Х
+     * @param posY позиция Y
+     * @param posZ позиция Z
+     * @param rotX поворот по оси Х
+     * @param rotY поворот по оси Y
+     * @param rotZ поворот по оси Z
+     * @param rotW поворот по оси W
+     * @param scaleX масштаб по Х
+     * @param scaleY масштаб по Y
+     * @param scaleZ масштаб по Z
+     * @return 
+     */
+    public Matrix4f translationRotateScale(
+            float posX, float posY, float posZ, 
+            float rotX, float rotY, float rotZ, float rotW, 
+            float scaleX, float scaleY, float scaleZ) {
+        
+        Matrix4f translationMatrix = new Matrix4f().translated(new Vector3f(posX, posY, posZ));
+	Matrix4f rotationMatrix = new Matrix4f().rotated(new Vector3f(-rotX, -rotY, -rotZ));
+	Matrix4f scaleMatrix = new Matrix4f().scaled(new Vector3f(scaleX, scaleY, scaleZ));
+                
+	return translationMatrix.mul(rotationMatrix.mul(scaleMatrix));
+        
     }
     
     // =========================================
@@ -315,6 +347,13 @@ public class Matrix4f {
     public void set(int x, int y, float value) {
         matrix[x][y] = value;
     }
+    
+    public void set(Matrix4f matrix) {
+        this.matrix = new float[4][4];
+        for(int x = 0; x < 4; x++) 
+            for(int y = 0; y < 4; y++) 
+                this.matrix[x][y] = matrix.get(x, y);
+    }
 
     @Override
     public String toString() {
@@ -327,5 +366,6 @@ public class Matrix4f {
         }
         return matrix;
     }
+
 }
 
