@@ -157,6 +157,8 @@ public class ShaderProgram {
      */
     public void cleanup() {
         unbind();
+        if(vertexShaderId != 0)  glDeleteShader(vertexShaderId);
+        if(fragmentShaderId != 0)  glDeleteShader(fragmentShaderId);
         if(programId != 0) 
             glDeleteProgram(programId);
     }
